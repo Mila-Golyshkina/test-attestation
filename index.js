@@ -46,18 +46,49 @@ export default function solution(content) {
   //     maxTemp = temperatures[i];
   //   }
   // }
-  
-  const data = content.split("\n").slice(1);
-  data.length = data.length - 1;
+  // BEGIN
+  const rows = content.split("\n");
+  const data = rows.slice(1, rows.length - 1).map((row) => row.split(","));
   console.log(`Count: ${data.length}`);
 
-  let cities = data.map((row) => row.split(",").at(-3));
-  cities = _.uniq(cities).sort().join(", ");
-  console.log(`Cities: ${cities}`);
+  //step2
+  const cities = data.map((row) => row[7]);
+  const uniqAndSortCities = _.uniq(cities);
+  console.log(`Cities: ${uniqAndSortCities.sort().join(", ")}`);
 
-  const humidities = data.map((row) => row.split(",")[3]);
-  const minHumidity = Math.min(...humidities);
-  const maxHumidity = Math.max(...humidities);
-  console.log(`Humidity: Min: ${minHumidity}, Max: ${maxHumidity}`);
+  //step3
+  const humidites = data.map((row) => row[3]);
+
+  const humiditesMin = humidites.reduce((acc, curr) =>
+    acc > curr ? curr : acc
+  );
+  const humiditesMax = humidites.reduce((acc, curr) =>
+    acc < curr ? curr : acc
+  );
+  console.log(`Humidity: Min: ${humiditesMin}, Max: ${humiditesMax}`);
+
+  //step4
+  const maxTemp = data.map((row) => row[1]);
+  const indexMaxTemp = maxTemp.indexOf(String(Math.max(...maxTemp)));
+  const hotestCityTemp = cities[indexMaxTemp];
+  const days = data.map((row) => row[0]);
+  const hotestDay = days[indexMaxTemp];
+  console.log(`HottestDay: ${hotestDay} ${hotestCityTemp}`);
+
+  //step5
+  const maxtemper = uniqAndSortCities.map((city) => []);
+
+  for (let i = 0; i < uniqAndSortCities.length; i++) {
+    for (let j = 0; j < data.length; j++) {
+      if (data[j].includes(uniqAndSortCities[i])) {
+        maxtemper[i].push(data[j][1]);
+      }
+    }
+  }
+  const average = maxtemper.map((arr) =>
+    arr.map((el) => Number(el)).reduce((acc, el) => acc + el)
+  );
+  const hottestCity = uniqAndSortCities[average.indexOf(Math.max(...average))];
+  console.log(`HottestCity: ${hottestCity}`);
   // END
 }
